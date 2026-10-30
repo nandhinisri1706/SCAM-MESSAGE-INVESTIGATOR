@@ -1,6 +1,4 @@
 # Scam Message Investigator
-<img width="1261" height="387" alt="image" src="https://github.com/user-attachments/assets/482f5a94-73e0-480d-84e5-6452cd96523f" />
-
 
 ## Project Overview
 
@@ -138,12 +136,31 @@ Ensure Ollama is running before starting the application.
 | Unexpected lottery prize requiring payment | High Concern |
 | College examination schedule notification | Low Concern |
 | Parcel delivery message requesting payment through an unfamiliar link | Medium/High Concern |
-<img width="1296" height="372" alt="image" src="https://github.com/user-attachments/assets/7c21a87d-fa5a-4f2a-8544-b7529b083eab" />
-<img width="1273" height="393" alt="image" src="https://github.com/user-attachments/assets/713f73ac-e91c-4424-be47-b8f2ababa772" />
-<img width="1239" height="252" alt="image" src="https://github.com/user-attachments/assets/22ac893b-a373-451e-9b0e-ffedc2a141df" />
-
 
 ## Safety and Limitations
 
 - The application provides an AI-generated assessment, not a guaranteed scam verdict.
-- It
+- It analyzes message text only.
+- It does not independently verify URLs or sender identities.
+- A Low Concern result does not guarantee that a message is safe.
+- Users should verify suspicious communications through official channels.
+- Never enter real passwords, PINs, or OTPs during testing.
+
+## Future Enhancements
+
+- URL analysis and suspicious link detection.
+- Email scam detection.
+- Multilingual message analysis.
+- Message history and investigation reports.
+- Improved scam classification accuracy.
+- Additional security analysis features.
+
+## Author
+
+**Nandhini Sri L V**
+
+B.Sc Computer Science with Artificial Intelligence
+
+## Project Category
+
+Artificial Intelligence | Natural Language Processing | Cybersecurity | Python
