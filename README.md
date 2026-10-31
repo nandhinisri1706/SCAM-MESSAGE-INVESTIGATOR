@@ -169,3 +169,5 @@ B.Sc Computer Science with Artificial Intelligence
 ## Project Category
 
 Artificial Intelligence | Natural Language Processing | Cybersecurity | Python
+
+https://scam-message-investigator-ekcwyljku33yfgjpf6j39z.streamlit.app/
