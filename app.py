@@ -7,8 +7,8 @@ import streamlit as st
 # APPLICATION CONFIGURATION
 # -------------------------------
 
-MODEL = "gemma3:1b"
-OLLAMA_URL = "http://localhost:11434/api/chat"
+MODEL = "beam"
+OLLAMA_URL = "https://ollama.com/api/chat"
 
 st.set_page_config(
     page_title="Scam Message Investigator",
@@ -21,13 +21,14 @@ st.set_page_config(
 # -------------------------------
 
 st.title("🛡️ Scam Message Investigator")
+
 st.caption(
-    "AI-powered investigation using a locally running LLM"
+    "AI-powered scam detection using Ollama Cloud"
 )
 
 st.info(
     "Paste a suspicious message to examine its warning signs. "
-    "Your message is sent to your local Ollama service for analysis."
+    "Your message is securely sent to Ollama Cloud for AI analysis."
 )
 
 # -------------------------------
@@ -93,8 +94,15 @@ message = st.text_area(
 # -------------------------------
 
 def investigate_message(text):
+
+    api_key = st.secrets["OLLAMA_API_KEY"]
+
     response = requests.post(
         OLLAMA_URL,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        },
         json={
             "model": MODEL,
             "messages": [
@@ -117,12 +125,13 @@ def investigate_message(text):
                 "temperature": 0.1
             }
         },
-        timeout=300
+        timeout=180
     )
 
     response.raise_for_status()
 
     result = response.json()
+
     content = result["message"]["content"]
 
     return json.loads(content)
@@ -135,73 +144,137 @@ def investigate_message(text):
 if st.button("🔍 Investigate Message", type="primary"):
 
     if not message.strip():
+
         st.warning("Please enter a message first.")
 
     else:
+
         try:
+
             with st.spinner(
-                "Local AI is examining the message..."
+                "AI is examining the message using Ollama Cloud..."
             ):
+
                 report = investigate_message(message.strip())
 
             st.subheader("Investigation Report")
 
+            # -------------------------------
+            # RISK LEVEL
+            # -------------------------------
+
             risk = report.get(
-                "risk_level", "Unable to assess"
+                "risk_level",
+                "Unable to assess"
             )
 
             if risk == "High Concern":
+
                 st.error("🚨 " + risk)
+
             elif risk == "Medium Concern":
+
                 st.warning("⚠️ " + risk)
+
             elif risk == "Low Concern":
+
                 st.success("✅ " + risk)
+
             else:
+
                 st.info(risk)
+
+            # -------------------------------
+            # MESSAGE DETAILS
+            # -------------------------------
 
             col1, col2 = st.columns(2)
 
             with col1:
+
                 st.markdown("### Message Type")
+
                 st.write(
-                    report.get("message_type", "Not identified")
+                    report.get(
+                        "message_type",
+                        "Not identified"
+                    )
                 )
 
             with col2:
+
                 st.markdown("### Summary")
+
                 st.write(
-                    report.get("summary", "No summary available")
+                    report.get(
+                        "summary",
+                        "No summary available"
+                    )
                 )
+
+            # -------------------------------
+            # WARNING SIGNS
+            # -------------------------------
 
             st.markdown("### Warning Signs")
 
-            warning_signs = report.get("warning_signs", [])
+            warning_signs = report.get(
+                "warning_signs",
+                []
+            )
 
             if warning_signs:
+
                 for item in warning_signs:
+
                     with st.expander(
-                        item.get("evidence", "Warning sign")
+                        item.get(
+                            "evidence",
+                            "Warning sign"
+                        )
                     ):
+
                         st.write(
                             item.get(
                                 "reason",
                                 "No explanation provided."
                             )
                         )
+
             else:
+
                 st.write(
                     "No clear warning signs were identified. "
                     "This does not prove the message is safe."
                 )
 
+            # -------------------------------
+            # RECOMMENDED ACTIONS
+            # -------------------------------
+
             st.markdown("### Recommended Safety Actions")
 
-            for action in report.get(
-                "recommended_actions", []
-            ):
-                st.markdown("- " + action)
+            actions = report.get(
+                "recommended_actions",
+                []
+            )
+
+            if actions:
+
+                for action in actions:
+
+                    st.markdown("- " + str(action))
+
+            else:
+
+                st.write("No recommendations available.")
+
+            # -------------------------------
+            # LIMITATIONS
+            # -------------------------------
 
             st.markdown("### Investigation Limitations")
+
             st.write(
                 report.get(
                     "limitations",
@@ -209,27 +282,60 @@ if st.button("🔍 Investigate Message", type="primary"):
                 )
             )
 
+            # -------------------------------
+            # FOOTER
+            # -------------------------------
+
             st.caption(
                 "AI-generated assessment only. Verify through "
                 "official channels before taking action."
             )
 
-        except requests.exceptions.ConnectionError:
+            st.caption(
+                "Powered by Ollama Cloud | Model: " + MODEL
+            )
+
+        # -------------------------------
+        # ERROR HANDLING
+        # -------------------------------
+
+        except KeyError:
+
             st.error(
-                "Cannot connect to Ollama. Make sure Ollama is "
-                "installed and running on this computer."
+                "Ollama API key is missing. "
+                "Configure OLLAMA_API_KEY in Streamlit Secrets."
             )
 
         except requests.exceptions.Timeout:
+
             st.error(
-                "The model took too long to respond. "
-                "Try a smaller model or a shorter message."
+                "The cloud model took too long to respond. "
+                "Please try again."
             )
 
-        except (requests.exceptions.RequestException,
-                ValueError, KeyError) as error:
+        except requests.exceptions.HTTPError as error:
+
             st.error(
-                "Could not generate a valid report. "
-                "Check the model and try again."
+                "Ollama Cloud API request failed. "
+                "Check your API access, model availability and usage limits."
             )
+
+            if error.response is not None:
+                st.caption(error.response.text[:1000])
+
+        except requests.exceptions.RequestException as error:
+
+            st.error(
+                "Could not connect to Ollama Cloud."
+            )
+
+            st.caption(str(error))
+
+        except (ValueError, TypeError, AttributeError) as error:
+
+            st.error(
+                "Could not generate a valid investigation report. "
+                "Please try again."
+            )
+
             st.caption(str(error))
