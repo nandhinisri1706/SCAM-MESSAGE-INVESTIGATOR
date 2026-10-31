@@ -1,4 +1,5 @@
 # Scam Message Investigator
+<img width="1333" height="464" alt="image" src="https://github.com/user-attachments/assets/f289e002-2d7a-4bda-9d81-f49d50cc9636" />
 
 ## Project Overview
 
@@ -136,6 +137,10 @@ Ensure Ollama is running before starting the application.
 | Unexpected lottery prize requiring payment | High Concern |
 | College examination schedule notification | Low Concern |
 | Parcel delivery message requesting payment through an unfamiliar link | Medium/High Concern |
+<img width="1260" height="519" alt="image" src="https://github.com/user-attachments/assets/6380d6b7-82f3-4b45-93b5-6168b099f3d2" />
+<img width="1292" height="492" alt="image" src="https://github.com/user-attachments/assets/8fdda681-42b1-4552-a618-3d921237a4aa" />
+![Uploading image.png…]()
+
 
 ## Safety and Limitations
 
